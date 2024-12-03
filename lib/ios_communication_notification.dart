@@ -19,8 +19,7 @@ class IosCommunicationNotification {
   }
 
   void setOnClickNotification(Function(String payload) onClick) {
-    return IosCommunicationNotificationPlatform.instance
-        .onClickNotification(onClick);
+    return IosCommunicationNotificationPlatform.instance.onClickNotification(onClick);
   }
 
   Future<String?> getInitialPayload() async {

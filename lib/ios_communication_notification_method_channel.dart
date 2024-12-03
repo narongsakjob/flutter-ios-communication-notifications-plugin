@@ -7,8 +7,7 @@ import 'package:ios_communication_notification/models/notification_info_model.da
 import 'ios_communication_notification_platform_interface.dart';
 
 /// An implementation of [IosCommunicationNotificationPlatform] that uses method channels.
-class MethodChannelIosCommunicationNotification
-    extends IosCommunicationNotificationPlatform {
+class MethodChannelIosCommunicationNotification extends IosCommunicationNotificationPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
   final methodChannel = const MethodChannel('ios_communication_notification');
@@ -41,8 +40,7 @@ class MethodChannelIosCommunicationNotification
   Future<bool> isAvailable() async {
     if (!Platform.isIOS) return false;
 
-    final bool isAvailable =
-        await methodChannel.invokeMethod<bool>("isAvailable") ?? false;
+    final bool isAvailable = await methodChannel.invokeMethod<bool>("isAvailable") ?? false;
 
     return isAvailable;
   }

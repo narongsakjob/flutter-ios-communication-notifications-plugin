@@ -7,7 +7,7 @@ class CommunicationNotificationPlugin {
     // Function to check if a notification with the same content has been delivered
     func hasDuplicateNotification(_ notificationInfo: NotificationInfo, completion: @escaping (Bool) -> Void) {
         let notificationCenter = UNUserNotificationCenter.current()
-        
+
         notificationCenter.getDeliveredNotifications { deliveredNotifications in
             // Loop through the delivered notifications
             for deliveredNotification in deliveredNotifications {
@@ -19,7 +19,7 @@ class CommunicationNotificationPlugin {
                     return
                 }
             }
-            
+
             // If no duplicate notification is found, return false
             completion(false)
         }
@@ -54,27 +54,44 @@ class CommunicationNotificationPlugin {
             }
         }
     }
-    
+
     func dispatchNotification(_ notificationInfo: NotificationInfo) {
         if #available(iOS 15.0, *) {
-            let uuid = UUID.init().uuidString
+            let uuid = UUID().uuidString
             let currentTime = Date().timeIntervalSince1970
             let identifier = "\(IosCommunicationConstant.prefixIdentifier):\(uuid):\(currentTime)"
 
             var content = UNMutableNotificationContent()
-            
+
             content.title = notificationInfo.senderName
-            content.subtitle = ""
             content.body = notificationInfo.content
             content.sound = UNNotificationSound(named: UNNotificationSoundName(rawValue: "alarm"))
             content.categoryIdentifier = identifier
             content.userInfo = ["data": notificationInfo.value]
-            
+
             var personNameComponents = PersonNameComponents()
             personNameComponents.nickname = notificationInfo.senderName
-            
+
             let avatar = INImage(imageData: notificationInfo.pngImage)
-            
+
+            // Check if a banner image is provided
+            if let bannerImage = notificationInfo.bannerImage {
+                // Save the banner image to disk
+                if let bannerURL = saveImageToDisk(bannerImage) {
+                    do {
+                        let bannerAttachment = try UNNotificationAttachment(identifier: "banner", url: bannerURL, options: nil)
+                        content.attachments = [bannerAttachment]
+                    } catch {
+                        print("Error creating banner attachment: \(error)")
+                    }
+                } else {
+                    print("Failed to save banner image to disk.")
+                }
+            } else {
+                print("No banner image provided.")
+            }
+
+
             let senderPerson = INPerson(
                 personHandle: INPersonHandle(value: notificationInfo.value, type: .unknown),
                 nameComponents: personNameComponents,
@@ -85,7 +102,7 @@ class CommunicationNotificationPlugin {
                 isMe: false,
                 suggestionType: .none
             )
-            
+
             let mPerson = INPerson(
                 personHandle: INPersonHandle(value: "", type: .unknown),
                 nameComponents: nil,
@@ -98,6 +115,9 @@ class CommunicationNotificationPlugin {
             )
             
             
+            
+
+            
             let intent = INSendMessageIntent(
                 recipients: [mPerson],
                 outgoingMessageType: .outgoingMessageText,
@@ -108,31 +128,49 @@ class CommunicationNotificationPlugin {
                 sender: senderPerson,
                 attachments: nil
             )
-            
+
             intent.setImage(avatar, forParameterNamed: \.sender)
-            
+
             let interaction = INInteraction(intent: intent, response: nil)
             interaction.direction = .incoming
-            
-            interaction.donate(completion: nil)
-            
+            interaction.donate(completion: { error in
+                if let error = error {
+                    print("Error donating interaction: \(error)")
+                }
+            })
+
             do {
                 content = try content.updating(from: intent) as! UNMutableNotificationContent
             } catch {
-                // Handle errors
+                print("Error updating content from intent: \(error)")
             }
             
+            
+            // Request from identifier
+
             // Request from identifier
             let request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
-            
-            // actions
-            let close = UNNotificationAction(identifier: "close", title: "Close", options: .destructive)
-            let category = UNNotificationCategory(identifier: identifier, actions: [close], intentIdentifiers: [])
-            
+
+            let closeAction = UNNotificationAction(identifier: "close", title: "Close", options: .destructive)
+            let category = UNNotificationCategory(identifier: identifier, actions: [closeAction], intentIdentifiers: [])
+
             UNUserNotificationCenter.current().setNotificationCategories([category])
-            
-            // Add notification request
             UNUserNotificationCenter.current().add(request)
         }
     }
+
+    // Helper function to save image data to disk
+    func saveImageToDisk(_ imageData: Data) -> URL? {
+        let temporaryDirectory = FileManager.default.temporaryDirectory
+        let imageFileURL = temporaryDirectory.appendingPathComponent("bannerImage_\(UUID().uuidString).jpg")
+
+        do {
+            try imageData.write(to: imageFileURL)
+            return imageFileURL
+        } catch {
+            print("Error saving image to disk: \(error)")
+            return nil
+        }
+    }
+
 }

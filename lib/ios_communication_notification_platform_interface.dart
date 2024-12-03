@@ -9,8 +9,7 @@ abstract class IosCommunicationNotificationPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static IosCommunicationNotificationPlatform _instance =
-      MethodChannelIosCommunicationNotification();
+  static IosCommunicationNotificationPlatform _instance = MethodChannelIosCommunicationNotification();
 
   /// The default instance of [IosCommunicationNotificationPlatform] to use.
   ///
