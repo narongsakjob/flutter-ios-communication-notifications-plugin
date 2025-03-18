@@ -6,4 +6,5 @@ struct NotificationInfo {
     var bannerImage: Data?
     var content: String
     var value: String
+    var subtitle: String?
 }

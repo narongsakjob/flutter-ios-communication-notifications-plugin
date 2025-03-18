@@ -68,6 +68,9 @@ class CommunicationNotificationPlugin {
             content.sound = UNNotificationSound(named: UNNotificationSoundName(rawValue: "alarm"))
             content.categoryIdentifier = identifier
             content.userInfo = ["data": notificationInfo.value]
+            if let subtitle = notificationInfo.subtitle, !subtitle.isEmpty {
+                content.subtitle = subtitle
+            }
 
             var personNameComponents = PersonNameComponents()
             personNameComponents.nickname = notificationInfo.senderName

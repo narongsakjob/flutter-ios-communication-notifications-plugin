@@ -8,6 +8,7 @@ class NotificationInfo {
   final Uint8List? bannerBytes;
   final String content;
   final String value;
+  final String? subtitle;
   final Function(String payload)? onPressed;
   NotificationInfo({
     required this.senderName,
@@ -15,6 +16,7 @@ class NotificationInfo {
     required this.content,
     required this.value,
     this.bannerBytes,
+    this.subtitle,
     this.onPressed,
   });
 
@@ -24,6 +26,7 @@ class NotificationInfo {
     Uint8List? bannerBytes,
     String? content,
     String? value,
+    String? subtitle,
     Function(String payload)? onPressed,
   }) {
     return NotificationInfo(
@@ -32,6 +35,7 @@ class NotificationInfo {
       bannerBytes: bannerBytes ?? this.bannerBytes,
       content: content ?? this.content,
       value: value ?? this.value,
+      subtitle: subtitle ?? this.subtitle,
       onPressed: onPressed ?? this.onPressed,
     );
   }
@@ -43,6 +47,7 @@ class NotificationInfo {
       'bannerBytes': bannerBytes,
       'content': content,
       'value': value,
+      'subtitle': subtitle,
     };
   }
 
@@ -50,7 +55,7 @@ class NotificationInfo {
 
   @override
   String toString() {
-    return 'NotificationInfo(senderName: $senderName, imageBytes: $imageBytes,  bannerBytes: $bannerBytes, content: $content, value: $value, onPressed: $onPressed)';
+    return 'NotificationInfo(senderName: $senderName, imageBytes: $imageBytes, bannerBytes: $bannerBytes, content: $content, value: $value, subtitle: $subtitle, onPressed: $onPressed)';
   }
 
   @override
