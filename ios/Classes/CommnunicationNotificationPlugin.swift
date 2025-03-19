@@ -104,7 +104,7 @@ class CommunicationNotificationPlugin {
                 suggestionType: .none
             )
 
-            let mPerson = INPerson(
+            let mePerson = INPerson(
                 personHandle: INPersonHandle(value: "", type: .unknown),
                 nameComponents: nil,
                 displayName: nil,
