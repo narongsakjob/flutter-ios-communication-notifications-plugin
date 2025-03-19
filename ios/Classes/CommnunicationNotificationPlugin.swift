@@ -68,9 +68,6 @@ class CommunicationNotificationPlugin {
             content.sound = UNNotificationSound(named: UNNotificationSoundName(rawValue: "alarm"))
             content.categoryIdentifier = identifier
             content.userInfo = ["data": notificationInfo.value]
-            if let subtitle = notificationInfo.subtitle, !subtitle.isEmpty {
-                content.subtitle = subtitle
-            }
 
             // Check if a banner image is provided
             if let bannerImage = notificationInfo.bannerImage {
@@ -115,27 +112,36 @@ class CommunicationNotificationPlugin {
                 suggestionType: .none
             )
 
-            // let intent = INSendMessageIntent(
-            //     recipients: [mPerson],
-            //     outgoingMessageType: .outgoingMessageText,
-            //     content: notificationInfo.content,
-            //     speakableGroupName: INSpeakableString(spokenPhrase: notificationInfo.senderName),
-            //     conversationIdentifier: notificationInfo.senderName,
-            //     serviceName: nil,
-            //     sender: senderPerson,
-            //     attachments: nil
-            // )
+            let intent: INSendMessageIntent
 
-            let intent = INSendMessageIntent(
-                recipients: [mePerson,senderPerson],
-                outgoingMessageType: .unknown,
-                content: notificationInfo.content,
-                speakableGroupName: INSpeakableString(spokenPhrase: notificationInfo.senderName),
-                conversationIdentifier: notificationInfo.senderName,
-                serviceName: "CMNotification",
-                sender: senderPerson,
-                attachments: nil
-            )
+            // Check if subtitle exists
+            if let subtitle = notificationInfo.subtitle, !subtitle.isEmpty {
+                // A - Use when subtitle is available
+                intent = INSendMessageIntent(
+                    recipients: [mePerson, senderPerson],
+                    outgoingMessageType: .unknown,
+                    content: notificationInfo.content ?? "",
+                    speakableGroupName: INSpeakableString(spokenPhrase: subtitle),
+                    conversationIdentifier: subtitle,
+                    serviceName: "CMNotification",
+                    sender: senderPerson,
+                    attachments: nil
+                )
+                print("Using intent (with subtitle): \(subtitle)")
+            } else {
+                // B - Use when no subtitle is available
+                intent = INSendMessageIntent(
+                    recipients: [mePerson],
+                    outgoingMessageType: .outgoingMessageText,
+                    content: notificationInfo.content ?? "",
+                    speakableGroupName: INSpeakableString(spokenPhrase: notificationInfo.senderName),
+                    conversationIdentifier: notificationInfo.senderName,
+                    serviceName: nil,
+                    sender: senderPerson,
+                    attachments: nil
+                )
+                print("Using intent (no subtitle)")
+            }
 
             intent.setImage(avatar, forParameterNamed: \.speakableGroupName)
 
