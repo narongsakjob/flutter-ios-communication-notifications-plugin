@@ -72,11 +72,6 @@ class CommunicationNotificationPlugin {
                 content.subtitle = subtitle
             }
 
-            var personNameComponents = PersonNameComponents()
-            personNameComponents.nickname = notificationInfo.senderName
-
-            let avatar = INImage(imageData: notificationInfo.pngImage)
-
             // Check if a banner image is provided
             if let bannerImage = notificationInfo.bannerImage {
                 // Save the banner image to disk
@@ -94,6 +89,9 @@ class CommunicationNotificationPlugin {
                 print("No banner image provided.")
             }
 
+            var personNameComponents = PersonNameComponents()
+            personNameComponents.nickname = notificationInfo.senderName
+            let avatar = INImage(imageData: notificationInfo.pngImage)
 
             let senderPerson = INPerson(
                 personHandle: INPersonHandle(value: notificationInfo.value, type: .unknown),
@@ -116,23 +114,30 @@ class CommunicationNotificationPlugin {
                 isMe: true,
                 suggestionType: .none
             )
-            
-            
-            
 
-            
+            // let intent = INSendMessageIntent(
+            //     recipients: [mPerson],
+            //     outgoingMessageType: .outgoingMessageText,
+            //     content: notificationInfo.content,
+            //     speakableGroupName: INSpeakableString(spokenPhrase: notificationInfo.senderName),
+            //     conversationIdentifier: notificationInfo.senderName,
+            //     serviceName: nil,
+            //     sender: senderPerson,
+            //     attachments: nil
+            // )
+
             let intent = INSendMessageIntent(
-                recipients: [mPerson],
-                outgoingMessageType: .outgoingMessageText,
+                recipients: [mePerson,senderPerson],
+                outgoingMessageType: .unknown,
                 content: notificationInfo.content,
                 speakableGroupName: INSpeakableString(spokenPhrase: notificationInfo.senderName),
                 conversationIdentifier: notificationInfo.senderName,
-                serviceName: nil,
+                serviceName: "CMNotification",
                 sender: senderPerson,
                 attachments: nil
             )
 
-            intent.setImage(avatar, forParameterNamed: \.sender)
+            intent.setImage(avatar, forParameterNamed: \.speakableGroupName)
 
             let interaction = INInteraction(intent: intent, response: nil)
             interaction.direction = .incoming
@@ -147,17 +152,15 @@ class CommunicationNotificationPlugin {
             } catch {
                 print("Error updating content from intent: \(error)")
             }
-            
-            
-            // Request from identifier
+
 
             // Request from identifier
             let request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
 
-            let closeAction = UNNotificationAction(identifier: "close", title: "Close", options: .destructive)
-            let category = UNNotificationCategory(identifier: identifier, actions: [closeAction], intentIdentifiers: [])
+            // let closeAction = UNNotificationAction(identifier: "close", title: "Close", options: .destructive)
+            // let category = UNNotificationCategory(identifier: identifier, actions: [closeAction], intentIdentifiers: [])
 
-            UNUserNotificationCenter.current().setNotificationCategories([category])
+            // UNUserNotificationCenter.current().setNotificationCategories([category])
             UNUserNotificationCenter.current().add(request)
         }
     }

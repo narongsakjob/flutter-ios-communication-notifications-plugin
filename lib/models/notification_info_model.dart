@@ -62,11 +62,11 @@ class NotificationInfo {
   bool operator ==(covariant NotificationInfo other) {
     if (identical(this, other)) return true;
 
-    return other.senderName == senderName && other.imageBytes == imageBytes && other.bannerBytes == bannerBytes && other.content == content && other.value == value && other.onPressed == onPressed;
+    return other.senderName == senderName && other.imageBytes == imageBytes && other.bannerBytes == bannerBytes && other.content == content && other.value == value && other.onPressed == onPressed && other.subtitle == subtitle;
   }
 
   @override
   int get hashCode {
-    return senderName.hashCode ^ imageBytes.hashCode ^ bannerBytes.hashCode ^ content.hashCode ^ value.hashCode ^ onPressed.hashCode;
+    return senderName.hashCode ^ imageBytes.hashCode ^ bannerBytes.hashCode ^ content.hashCode ^ value.hashCode ^ onPressed.hashCode ^ subtitle.hashCode;
   }
 }
