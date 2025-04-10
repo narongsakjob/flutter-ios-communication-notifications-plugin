@@ -57,9 +57,7 @@ class CommunicationNotificationPlugin {
 
     func dispatchNotification(_ notificationInfo: NotificationInfo) {
         if #available(iOS 15.0, *) {
-            let uuid = UUID().uuidString
-            let currentTime = Date().timeIntervalSince1970
-            let identifier = "\(IosCommunicationConstant.prefixIdentifier):\(uuid):\(currentTime)"
+            let identifier = "\(IosCommunicationConstant.prefixIdentifier):\(notificationInfo.id)"
 
             var content = UNMutableNotificationContent()
 

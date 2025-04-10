@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 class NotificationInfo {
+  final String id;
   final String senderName;
   final Uint8List imageBytes;
   final Uint8List? bannerBytes;
@@ -11,6 +12,7 @@ class NotificationInfo {
   final String? subtitle;
   final Function(String payload)? onPressed;
   NotificationInfo({
+    required this.id,
     required this.senderName,
     required this.imageBytes,
     required this.content,
@@ -28,8 +30,10 @@ class NotificationInfo {
     String? value,
     String? subtitle,
     Function(String payload)? onPressed,
+    String? id,
   }) {
     return NotificationInfo(
+      id: id ?? this.id,
       senderName: senderName ?? this.senderName,
       imageBytes: imageBytes ?? this.imageBytes,
       bannerBytes: bannerBytes ?? this.bannerBytes,
@@ -42,6 +46,7 @@ class NotificationInfo {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'id': id,
       'senderName': senderName,
       'imageBytes': imageBytes,
       'bannerBytes': bannerBytes,
@@ -55,18 +60,32 @@ class NotificationInfo {
 
   @override
   String toString() {
-    return 'NotificationInfo(senderName: $senderName, imageBytes: $imageBytes, bannerBytes: $bannerBytes, content: $content, value: $value, subtitle: $subtitle, onPressed: $onPressed)';
+    return 'NotificationInfo(id: $id, senderName: $senderName, imageBytes: $imageBytes, bannerBytes: $bannerBytes, content: $content, value: $value, subtitle: $subtitle, onPressed: $onPressed)';
   }
 
   @override
   bool operator ==(covariant NotificationInfo other) {
     if (identical(this, other)) return true;
 
-    return other.senderName == senderName && other.imageBytes == imageBytes && other.bannerBytes == bannerBytes && other.content == content && other.value == value && other.onPressed == onPressed && other.subtitle == subtitle;
+    return other.senderName == senderName &&
+        other.imageBytes == imageBytes &&
+        other.bannerBytes == bannerBytes &&
+        other.content == content &&
+        other.value == value &&
+        other.onPressed == onPressed &&
+        other.subtitle == subtitle &&
+        other.id == id;
   }
 
   @override
   int get hashCode {
-    return senderName.hashCode ^ imageBytes.hashCode ^ bannerBytes.hashCode ^ content.hashCode ^ value.hashCode ^ onPressed.hashCode ^ subtitle.hashCode;
+    return senderName.hashCode ^
+        imageBytes.hashCode ^
+        bannerBytes.hashCode ^
+        content.hashCode ^
+        value.hashCode ^
+        onPressed.hashCode ^
+        subtitle.hashCode ^
+        id.hashCode;
   }
 }
